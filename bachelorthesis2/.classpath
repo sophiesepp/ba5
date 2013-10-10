@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" output="test-classes" path="test"/>
+	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER/App Engine (4)"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/bigquery-v2r108lv1.15.0-rc"/>
+	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/oauth2-v1r46lv1.15.0-rc"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/guava-gwt-14.0-rc1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/maven-gae-plugin-0.9.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-gson-stream-2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/json-io-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/xqjapi.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/google-http-client-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/google-http-client-android-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/google-http-client-appengine-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/google-http-client-gson-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/google-http-client-jackson-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/google-http-client-jackson2-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/google-http-client-protobuf-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/gson-2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/guava-jdk5-13.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/httpclient-4.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/httpcore-4.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/jackson-core-2.0.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/jackson-core-asl-1.9.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/jsr305-1.3.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/protobuf-java-2.4.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/google-http-java-client-1.12.0-beta/libs/xpp3-1.1.4c.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/gwt-visualization-1.1.2/gwt-visualization.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/gwt-visualization-1.1.2/gwt-visualization-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sophie/Downloads/gwt-visualization-1.1.2/gwt-visualization-noredist.jar"/>
+	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+</classpath>
