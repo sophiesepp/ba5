@@ -1,6 +1,6 @@
 package com.sophiesepp.server;
 
-import com.sophiesepp.client.AgeDownloadsComposerQuery;
+
 import com.sophiesepp.client.GreetingService;
 import com.sophiesepp.shared.AgeDownloadsComposer;
 import com.sophiesepp.shared.AgeKey;
@@ -8,7 +8,6 @@ import com.sophiesepp.shared.AgePublicationsComposer;
 import com.sophiesepp.shared.ComposerGenrePercent;
 import com.sophiesepp.shared.ComposerKeyPercent;
 import com.sophiesepp.shared.CountryDownloads;
-import com.sophiesepp.shared.GermanAustrianPercent;
 import com.sophiesepp.shared.KeyPercent;
 import com.sophiesepp.shared.CountriesKey;
 import com.sophiesepp.shared.MostUsedGenres;
@@ -18,7 +17,6 @@ import com.sophiesepp.shared.TimeDownloads;
 import com.sophiesepp.shared.TimeDownloadsNormalized;
 import com.sophiesepp.shared.TimeKey;
 import com.sophiesepp.shared.TimeAge;
-import com.sophiesepp.shared.NgramCountry;
 import com.sophiesepp.shared.TimePublications;
 import com.sophiesepp.shared.Top10genres;
 import com.sophiesepp.shared.Top10ngrams;
@@ -39,6 +37,7 @@ import com.google.api.services.bigquery.model.Job;
 import com.google.api.services.bigquery.model.JobConfiguration;
 import com.google.api.services.bigquery.model.JobConfigurationQuery;
 import com.google.api.services.bigquery.model.JobReference;
+import com.google.api.services.bigquery.model.JobStatus;
 import com.google.api.services.bigquery.model.Table;
 import com.google.api.services.bigquery.model.TableCell;
 import com.google.api.services.bigquery.model.TableDataList;
@@ -53,18 +52,14 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.security.GeneralSecurityException;
 
 
@@ -162,9 +157,38 @@ GreetingService {
 	}
 
 
-
-
-
+	public Boolean isjobRunning(String input, String kind, String diagram, int querytype, String normalizationTable, int destinationtype){
+		Bigquery bigquery;
+		JobReference jobId = null;
+		
+		String query = null;
+		String queryNormalize = "SELECT table1.value1, table1.value2 , table1.value3/table2.value2 FROM workspace."+kind+" AS table1 JOIN workspace."+normalizationTable+" AS table2 ON table1.value1=table2.value1";
+		String normalization = Hashing.md5().hashString(queryNormalize).toString();
+		bigquery = createAuthorizedClient();	
+		displayMessage(diagram);
+		Boolean jobrunning = null;
+		
+		if(destinationtype==1){
+			kind = normalizationTable;
+		}
+		if(querytype==1){
+			kind = normalization;
+			query = queryNormalize;			
+		}
+		if(querytype==0){
+			query = input;			
+		}
+		
+		Job job = makeJob(kind,query,destinationtype);
+		if (job.getStatus().equals("running")){
+			System.out.println("Job already running");
+			jobrunning= true;
+			}
+			else{
+			jobrunning= false;
+			}
+		return jobrunning;
+	}
 	/**
 	 * 
 	 * 
@@ -188,33 +212,43 @@ GreetingService {
 		Bigquery bigquery;
 		JobReference jobId = null;
 		Job completedJob = null;
+		Job job = null;
+		String query = null;
 		String queryNormalize = "SELECT table1.value1, table1.value2 , table1.value3/table2.value2 FROM workspace."+kind+" AS table1 JOIN workspace."+normalizationTable+" AS table2 ON table1.value1=table2.value1";
-		String kind2 = Hashing.md5().hashString(queryNormalize).toString();
+		String normalization = Hashing.md5().hashString(queryNormalize).toString();
 		bigquery = createAuthorizedClient();	
 		Key entityKey = null;
 		Entity requestResultEntity;
 		List<TableRow> rows = new ArrayList<TableRow>();
 		
 		
-		displayMessage(diagram);
-		
-		if(destinationtype!=0){
+		if(destinationtype==1){
 			kind = normalizationTable;
 		}
-			
-				
-				if(querytype==0){
-				entityKey = KeyFactory.createKey("requestResult", kind);
-				System.out.println("DESTINATION:  "+destinationtype+"   input: "+input);
-				}
-				if(querytype==1){
-				entityKey = KeyFactory.createKey("requestResult", kind2);
-				}
-			
-				
+		if(querytype==1){
+			kind = normalization;
+			query = queryNormalize;			
+		}
+		if(querytype==0){
+			query = input;			
+		}
 		
+		Job pollJob = null;
 		
-				Job job = null;
+	
+		try {
+			pollJob = bigquery.jobs().get(PROJECT_ID, kind).execute();
+			System.out.println(pollJob.getStatus().getState());
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		if(!(pollJob.getStatus().getState().equals("RUNNING")))
+		{
+			
+		entityKey = KeyFactory.createKey("requestResult", kind);
+		System.out.println("DESTINATION:  "+destinationtype+"   input: "+input);
+				
 		
 				//service.delete(EntityKey);
 		
@@ -230,7 +264,7 @@ GreetingService {
 				if(requestResultEntity==null){
 		
 					System.out.println("new job");
-					job = makeJob(kind,input,querytype,destinationtype);
+					job = makeJob(kind,query,destinationtype);
 		
 					try {
 		
@@ -271,55 +305,7 @@ GreetingService {
 				
 		
 				
-					if(querytype==1){
-						
 					
-						job = makeJob(kind2,queryNormalize,0,0);
-						String message = "Waiting for the results of the query";
-						try {
-		
-							jobId = startQuery(bigquery, PROJECT_ID,job);
-							
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-		
-						// Poll for Query Results, return result output
-		
-						try {
-							completedJob = checkQueryResults(bigquery, PROJECT_ID, jobId, diagram);
-		
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-		
-		
-		
-						GetQueryResultsResponse queryResult2 = null;
-						try {
-							queryResult2 = bigquery
-									.jobs()
-									.getQueryResults(PROJECT_ID,
-											completedJob.getJobReference().getJobId()).execute();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					
-					
-		
-						 rows = queryResult2.getRows();
-					
-					
-					
-						
-					}
-				
 		
 					JobReference l = completedJob.getJobReference();
 		
@@ -351,7 +337,6 @@ GreetingService {
 		
 					TableDataList tableDataList = null;
 				
-					if(querytype==0){
 					try {
 						tableDataList = bigquery.tabledata().list(PROJECT_ID,
 								DATASET_ID, kind).execute();
@@ -359,25 +344,18 @@ GreetingService {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					}
+					
 				
-					if(querytype==1){
-						try {
-							tableDataList = bigquery.tabledata().list(PROJECT_ID,
-									DATASET_ID, kind2).execute();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						}
 		
 					rows = tableDataList.getRows();
 						
 				}
 				
 			
-		
+		}
 		return rows;
+		
+		
 	}
 
 
@@ -387,7 +365,7 @@ GreetingService {
 
 
 
-	private Job makeJob(String kind,String query, int querytype, int destinationtype) {
+	private Job makeJob(String kind,String query, int destinationtype) {
 
 		JobConfigurationQuery jobconfigurationquery = new JobConfigurationQuery();
 
@@ -545,7 +523,7 @@ GreetingService {
 					jobId.getJobId(), pollJob.getStatus().getState());
 			
 			if (pollJob.getStatus().getState().equals("DONE")) {
-				if(diagram=="agekey"){
+				/**if(diagram=="agekey"){
 					com.sophiesepp.client.AgeKeyQuery.closeMessage();
 					}
 				if(diagram=="composer"){
@@ -568,7 +546,7 @@ GreetingService {
 					}
 				if(diagram=="timepublications"){
 				com.sophiesepp.client.TimePublicationsQuery.closeMessage();
-				}
+				}*/
 				return pollJob;
 			}
 			// Pause execution for one second before polling job status again, to
@@ -576,8 +554,8 @@ GreetingService {
 			// application bandwidth.
 			Thread.sleep(1000);
 		}
-
 	}
+	
 
 	//  only been executed once to store the sum of publications for each year which is needed for normalization
 	public void queryPublicationsPerYear(){
@@ -649,7 +627,7 @@ GreetingService {
 		int querytype = 1;
 		
 		String kind = Hashing.md5().hashString(input).toString();
-	
+		
 		List<TableRow> rows = getQueryResult(input,kind,"timeage",querytype,timenormalizationtable,0);
 		List<TimeAge> results = new ArrayList<TimeAge>();
 		
