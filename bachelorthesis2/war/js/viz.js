@@ -1,4 +1,3 @@
-
 var keyboard = function(keyboard){
 		
 	function getMelodyArray(melodyIndex, keyboard) {	
@@ -639,7 +638,7 @@ var keyboard = function(keyboard){
 		
 		
 		var ngramType =  $("#ngram" + keyboard + "Container select").val();
-		var ngram = $("#Keyboard" + keyboard + "Container .gwt-TextBox").val();" 	
+		var ngram = $("#Keyboard" + keyboard + "Container .gwt-TextBox").val(); 	
 		
 		_gaq.push(['_trackEvent', "Search parameters", "Visual score clicked"]);
 
